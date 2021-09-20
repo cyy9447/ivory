@@ -33,7 +33,7 @@ import qualified Prelude.Compat                          as Prelude
 
 import           Control.Monad                           (foldM, unless, void)
 #if MIN_VERSION_base_compat(0,10,0)
-import qualified Control.Monad.Fail.Compat as Fail
+import qualified Control.Monad.Fail.Compat               as Fail
 #endif
 import           Data.Int
 import qualified Data.Map                                as Map
@@ -163,7 +163,7 @@ numUnOp op (Uint32 x) = Uint32 (op x)
 numUnOp op (Uint64 x) = Uint64 (op x)
 numUnOp op (Float  x) = Float  (op x)
 numUnOp op (Double x) = Double (op x)
-numUnOp _ x = error $ "invalid operands to `numUnOp`: " ++ show x
+numUnOp _ x           = error $ "invalid operands to `numUnOp`: " ++ show x
 
 negate :: Value -> Value
 negate = numUnOp Prelude.negate
@@ -349,13 +349,13 @@ evalExpr ty expr = case expr of
   I.ExpLit lit -> evalLit ty lit
   I.ExpOp op exprs
     -> do let opTy = case op of
-                I.ExpEq t -> t
-                I.ExpNeq t -> t
-                I.ExpGt _ t -> t
-                I.ExpLt _ t -> t
+                I.ExpEq t    -> t
+                I.ExpNeq t   -> t
+                I.ExpGt _ t  -> t
+                I.ExpLt _ t  -> t
                 I.ExpIsNan t -> t
                 I.ExpIsInf t -> t
-                _ -> ty
+                _            -> ty
           vals <- mapM (evalExpr opTy) exprs
           evalOp op vals
   I.ExpSafeCast fromTy expr
@@ -404,7 +404,7 @@ mkVal ty = case ty of
   I.TyDouble        -> Double . fromInteger
   I.TyBool          -> Bool   . toEnum . fromInteger
   I.TyChar          -> Char   . toEnum . fromInteger
-  _ -> error $ "mkVal: " ++ show ty
+  _                 -> error $ "mkVal: " ++ show ty
 
 evalOp :: I.ExpOp -> [Value] -> Eval Value
 evalOp (I.ExpEq _)       [x, y] = return (x `eq`  y)
